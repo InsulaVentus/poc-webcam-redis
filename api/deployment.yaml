@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-api
+  labels:
+    app: image-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: image-api
+  template:
+    metadata:
+      labels:
+        app: image-api
+    spec:
+      containers:
+      - name: image-api
+        image: k3d-registry.localhost:5000/image-api:latest
+        env:
+        - name: REDIS_HOST
+          value: redis
+        - name: REDIS_PORT
+          value: "6379"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: image-api
+  name: image-api
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: image-api
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: image-api
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: image-api
+            port:
+              number: 80

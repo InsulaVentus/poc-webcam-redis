@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-server
+  labels:
+    app: image-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: image-server
+  template:
+    metadata:
+      labels:
+        app: image-server
+    spec:
+      containers:
+      - name: image-server
+        image: k3d-registry.localhost:5000/image-server:latest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: image-server
+  name: image-server
+spec:
+  ports:
+  - port: 8888
+    protocol: TCP
+    targetPort: 8888
+  selector:
+    app: image-server
+  type: ClusterIP
