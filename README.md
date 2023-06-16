@@ -8,7 +8,8 @@ To run these components locally with k3s, run the following commands:
 
 Start the k3s cluster:
 ```bash
-avi k3s start
+k3d registry create registry.localhost --port 5000 && \
+k3d cluster create -p "8088:80@loadbalancer" --agents 1 --registry-use k3d-registry.localhost:5000
 ```
 
 Start the redis instance:
