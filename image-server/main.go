@@ -18,7 +18,6 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 	log.Print("Image handler called")
 	time.Sleep(3 * time.Second)
 
-	// Generate the image with timestamp
 	imageData := generateImageWithTimestamp()
 
 	// Set the appropriate headers for JPEG image
@@ -33,7 +32,6 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func generateImageWithTimestamp() []byte {
-	// Generate a simple image with timestamp
 	timestamp := time.Now().Format("2006-01-02 15:04:05")
 	message := []byte(fmt.Sprintf("API called at: %s", timestamp))
 	return message

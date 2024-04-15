@@ -14,7 +14,7 @@ import (
 var (
 	redisClient  *redis.Client
 	lockKey      = "image_lock"
-	waitDuration = 10 * time.Second // Adjust the waiting period as per your requirement
+	waitDuration = 10 * time.Second
 )
 
 func main() {
@@ -25,16 +25,13 @@ func main() {
 		DB:       0,
 	})
 
-	// Test Redis connection
 	_, err := redisClient.Ping().Result()
 	if err != nil {
 		log.Fatalf("Failed to connect to Redis: %s", err.Error())
 	}
 
-	// HTTP handler
 	http.HandleFunc("/images", getImageHandler)
 
-	// Start the server
 	log.Println("Server started on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
@@ -51,7 +48,6 @@ func getImageHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(cachedImage)
 		return
 	} else if err != redis.Nil {
-		// Handle Redis error
 		log.Printf("Failed to get image from Redis: %s", err.Error())
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
@@ -84,7 +80,6 @@ func getImageHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Serve the image
 		w.Header().Set("Content-Type", "image/jpeg")
 		w.Write(imageBytes)
 		return
@@ -100,7 +95,7 @@ func getImageHandler(w http.ResponseWriter, r *http.Request) {
 			w.Write(cachedImage)
 			return
 		}
-		time.Sleep(100 * time.Millisecond) // Adjust the sleep duration as per your requirement
+		time.Sleep(100 * time.Millisecond)
 	}
 
 	// Image did not become available within the waiting period, proceed with making the API call
@@ -112,7 +107,6 @@ func getImageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Serve the image
 	w.Header().Set("Content-Type", "image/jpeg")
 	w.Write(imageBytes)
 }
